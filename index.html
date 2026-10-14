@@ -1,0 +1,314 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PokéGroups</title>
+<style>
+:root{--bg:#0b1230;--card:#18214a;--acc:#5cd6ff;--txt:#eef2ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% -10%,#1d2f7a,var(--bg) 60%) fixed;color:var(--txt);font-family:system-ui,sans-serif}
+.scr{display:none;max-width:480px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom))}
+.scr.on{display:block;animation:in .3s}
+#splash.on,#menu.on{min-height:100vh;display:flex;flex-direction:column;justify-content:center;gap:14px;text-align:center}
+.logo,h1{font-size:40px;margin:0;background:linear-gradient(90deg,#5cd6ff,#b36bff);-webkit-background-clip:text;color:transparent;font-weight:800}
+h2{text-align:center}.sub{opacity:.7;font-size:13px;margin:0}
+.pbar{height:8px;background:var(--card);border-radius:8px;overflow:hidden}.pbar i{display:block;height:100%;width:0;background:var(--acc);transition:width .2s}
+button{font:inherit;color:var(--txt)}
+.big{min-height:54px;border:0;border-radius:16px;background:var(--acc);color:#06122e;font-weight:700;font-size:17px;width:100%}
+.big.alt,.act{background:var(--card);color:var(--txt)}
+.opts{display:flex;gap:8px;margin:10px 0 18px}
+.opts button{flex:1;min-height:64px;border:2px solid transparent;border-radius:14px;background:var(--card);font-weight:700}
+.opts button small{display:block;font-weight:400;font-size:11px;opacity:.7}
+.opts button.on{border-color:var(--acc);box-shadow:0 0 12px #5cd6ff66}
+.back{background:none;border:0;opacity:.7;width:100%;min-height:44px;margin-top:6px}
+.top{display:flex;align-items:center;gap:8px;margin-bottom:8px}.top h3{flex:1;margin:0;text-align:center}
+.top button{min-width:44px;min-height:40px;border:0;border-radius:12px;background:var(--card)}
+.stats{display:flex;gap:8px;margin-bottom:10px}
+.stats div{flex:1;background:var(--card);border-radius:12px;padding:6px;text-align:center;font-size:12px;opacity:.9}
+.stats b{display:block;font-size:20px;color:var(--acc)}
+.fg{border-radius:12px;padding:8px 10px;margin-bottom:8px;color:#10142b;animation:in .3s}
+.fg b{display:block}.fg span{font-size:12px}
+.c0{background:#f5c542}.c1{background:#4cc38a}.c2{background:#4c8dff}.c3{background:#b36bff}
+#grid{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:8px}
+#grid.shake{animation:sh .35s}
+.card{background:var(--card);border:2px solid transparent;border-radius:14px;padding:4px 2px;font-size:11px;display:flex;flex-direction:column;align-items:center;transition:transform .15s}
+#grid[style*="--n:3"] .card{font-size:13px}
+.card.sel{border-color:var(--acc);box-shadow:0 0 12px var(--acc);transform:scale(1.05)}
+.card.hl{animation:pu 1s infinite}.card.out{animation:out .3s forwards}
+.sp{position:relative;width:100%;aspect-ratio:1}
+.sp i{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;opacity:.4}
+.sp img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+#msg{min-height:22px;text-align:center;margin:10px 0;font-size:14px}
+#msg.good,#msg.win{color:#4cc38a}#msg.bad{color:#ff6b7a}
+.bar{display:flex;gap:8px}
+.act{flex:1;min-height:48px;border:0;border-radius:14px;font-size:15px}
+.act.pri{flex:2;background:var(--acc);color:#06122e;font-weight:700}
+button:disabled{opacity:.4}
+.modal{position:fixed;inset:0;background:#000b;display:grid;place-items:center;padding:20px}.modal[hidden]{display:none}
+.modal>div{background:var(--card);border-radius:20px;padding:24px;max-width:340px;width:100%;text-align:center;display:flex;flex-direction:column;gap:10px;animation:in .3s}
+.row{display:flex;justify-content:space-between;background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pu{50%{box-shadow:0 0 12px #f5c542;border-color:#f5c542}}
+@keyframes out{to{transform:scale(.4);opacity:0}}
+@keyframes in{from{transform:translateY(-8px);opacity:0}}
+.sp i[hidden]{display:none}
+.sp img{image-rendering:pixelated;filter:drop-shadow(0 3px 3px #0008)}
+body::before,body::after{content:"";position:fixed;width:340px;height:340px;border-radius:50%;filter:blur(70px);opacity:.35;z-index:-1;animation:fl 14s ease-in-out infinite alternate}
+body::before{background:#5b3cff;top:-80px;left:-100px}body::after{background:#00b8ff;bottom:-100px;right:-100px;animation-delay:-7s}
+@keyframes fl{to{transform:translate(60px,40px) scale(1.2)}}
+.logo,h1{filter:drop-shadow(0 4px 18px #5cd6ff55);letter-spacing:1px}
+.ball{width:96px;height:96px;margin:0 auto;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 12px 14px #0009)}
+@keyframes bob{50%{transform:translateY(-10px) rotate(8deg)}}
+.big{background:linear-gradient(135deg,#5cd6ff,#7b8cff);box-shadow:0 6px 0 #2a4fa8,0 10px 24px #5cd6ff44;transition:transform .1s,box-shadow .1s}
+.big:active{transform:translateY(4px);box-shadow:0 2px 0 #2a4fa8}
+.big.alt{background:linear-gradient(135deg,#27346b,#1b2552);box-shadow:0 6px 0 #0d1433;color:var(--txt)}
+.big.alt:active{box-shadow:0 2px 0 #0d1433}
+.opts button{box-shadow:0 4px 0 #0c1230}
+.card{background:linear-gradient(160deg,#222d63,#151c40);box-shadow:0 4px 0 #0c1230}
+.card:active{transform:scale(.95)}.card.sel{animation:selp .25s}
+@keyframes selp{50%{transform:scale(1.14)}}
+#gear{position:fixed;top:max(10px,env(safe-area-inset-top));right:12px;width:46px;height:46px;padding:10px;border-radius:50%;border:0;background:#18214acc;color:var(--txt);box-shadow:0 3px 0 #0c1230;z-index:5;transition:transform .3s}
+#gear:active{transform:rotate(90deg) scale(.9)}#gear svg{width:100%;height:100%}
+.panel{background:#18214acc;border-radius:16px;padding:14px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.panel h4{margin:0}.row2{flex-direction:row;align-items:center;justify-content:space-between}
+.tog{width:56px;height:32px;border-radius:16px;border:0;background:#0c1230;position:relative;transition:background .2s}
+.tog::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s}
+.tog.on{background:#4cc38a}.tog.on::after{transform:translateX(24px)}
+.modal{overflow:hidden}.modal>div{position:relative}
+.stars{font-size:38px;color:#f5c542;letter-spacing:6px;text-shadow:0 0 16px #f5c54288}
+.modal.show .stars{animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(0)}}
+.cf{position:absolute;top:-20px;width:8px;height:14px;border-radius:2px;animation:cf 2.4s ease-in forwards}
+@keyframes cf{to{transform:translate(var(--x),105vh) rotate(720deg);opacity:.8}}
+html,body{overflow-x:hidden}
+body::before,body::after{display:none}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;transition:opacity .3s}
+.scr.on{animation:sin .4s cubic-bezier(.2,.8,.2,1)}
+.scr.leave{position:absolute;left:0;right:0;top:0;margin:0 auto;animation:sout .25s ease-in forwards;pointer-events:none}
+@keyframes sin{from{opacity:0;transform:translateX(calc(var(--d,1)*44px))}}
+@keyframes sout{to{opacity:0;transform:translateX(calc(var(--d,1)*-44px))}}
+#gear{transition:opacity .3s,transform .3s}#gear.gh{opacity:0;pointer-events:none;transform:scale(.6)}
+.fg:not(:last-child){animation:none}
+.card.enter{animation:cardin .5s cubic-bezier(.2,.9,.3,1.3) both;animation-delay:calc(var(--i,0)*35ms)}
+@keyframes cardin{from{opacity:0;transform:translateY(24px) scale(.7)}}
+.modal{opacity:0;pointer-events:none;transition:opacity .45s}.modal.show{opacity:1;pointer-events:auto}
+.modal>div{animation:none;transform:translateY(50px) scale(.92);transition:transform .55s cubic-bezier(.2,1.3,.4,1)}.modal.show>div{transform:none}
+label{display:flex;flex-direction:column;gap:8px;font-size:14px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:8px;outline:0;background:linear-gradient(90deg,var(--acc) var(--v,50%),#0c1230 var(--v,50%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;box-shadow:0 3px 0 #2a4fa8}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border:0;border-radius:50%;background:#fff}
+</style></head><body><canvas id="bg"></canvas><svg width="0" height="0" style="position:absolute"><symbol id="ball" viewBox="0 0 100 100"><path d="M5 50a45 45 0 0 1 90 0z" fill="#ff4d5e"/><path d="M5 50a45 45 0 0 0 90 0z" fill="#fff"/><rect x="5" y="46" width="90" height="8" fill="#10142b"/><circle cx="50" cy="50" r="14" fill="#fff" stroke="#10142b" stroke-width="7"/></symbol></svg>
+<section id="splash" class="scr on"><svg class="ball"><use href="#ball"/></svg><div class="logo">PokéGroups</div><p class="sub" id="load">Chargement du Pokédex…</p><div class="pbar"><i id="pb"></i></div><button class="big" id="go" hidden>Jouer</button></section>
+<section id="menu" class="scr"><svg class="ball"><use href="#ball"/></svg><h1>PokéGroups</h1><p class="sub" id="dexinfo"></p><button class="big" data-go="mode">Jouer</button><button class="big alt" data-go="stats">Statistiques</button></section>
+<section id="mode" class="scr"><h2>Mode de jeu</h2>
+<div class="opts" id="sizes"><button data-v="3">3×3<small>3 groupes de 3</small></button><button data-v="4">4×4<small>4 groupes de 4</small></button></div>
+<div class="opts" id="diffs"><button data-v="0">Facile<small>types, générations</small></button><button data-v="1">Normal<small>+ lettres, stades</small></button><button data-v="2">Difficile<small>+ doubles types</small></button></div>
+<button class="big" id="start">C'est parti !</button><button class="back" data-go="menu">Retour</button></section>
+<section id="game" class="scr"><div class="top"><button id="quit">←</button><h3 id="gtitle"></h3><button id="new">↻</button></div>
+<div class="stats"><div><b id="left"></b>restants</div><div><b id="grp"></b>groupes</div><div><b id="err">0</b>erreurs</div></div>
+<div id="found"></div><div id="grid"></div><p id="msg"></p>
+<div class="bar"><button class="act" id="clear">Effacer</button><button class="act" id="hint">Indice</button><button class="act pri" id="ok" disabled>Vérifier le groupe</button></div></section>
+<section id="stats" class="scr"><h2>Statistiques</h2><div id="statlist"></div><button class="back" data-go="menu">Retour</button></section>
+<section id="opts" class="scr"><h2>Options</h2>
+<div class="panel"><h4>Pokédex</h4><p class="sub" id="dexinfo2"></p><button class="big alt" id="reset">Recharger le Pokédex</button></div>
+<div class="panel"><h4>Sprites hors ligne</h4><p class="sub" id="packinfo"></p><div class="pbar"><i id="pk"></i></div><button class="big alt" id="pack">Télécharger les sprites</button></div>
+<div class="panel"><h4>Audio</h4><label>Musique<input type="range" id="mv" min="0" max="100"></label><label>Effets sonores<input type="range" id="sv" min="0" max="100"></label></div>
+<div class="panel row2"><span>Vibrations</span><button class="tog" id="vib" aria-label="Vibrations"></button></div>
+<button class="back" data-go="menu">Retour</button></section>
+<button id="gear" class="gh" aria-label="Options"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="2.75 2.75"/><circle cx="12" cy="12" r="5.5" fill="currentColor"/><circle cx="12" cy="12" r="2.2" fill="#18214a"/></svg></button>
+<div class="modal" id="win"><div><h2 id="wt"></h2><div class="stars" id="stars"></div><p id="wd"></p><button class="big" id="again">Rejouer</button><button class="back" id="wmenu">Menu</button></div></div>
+<script>
+/* données de démonstration (repli hors ligne) */
+const RAW=[[1,'Bulbizarre','Plante,Poison',1,1],[2,'Herbizarre','Plante,Poison',1,2],[3,'Florizarre','Plante,Poison',1,3],[4,'Salamèche','Feu',1,1],[5,'Reptincel','Feu',1,2],[6,'Dracaufeu','Feu,Vol',1,3],[7,'Carapuce','Eau',1,1],[8,'Carabaffe','Eau',1,2],[9,'Tortank','Eau',1,3],[25,'Pikachu','Électrik',1,2],[26,'Raichu','Électrik',1,3],[37,'Goupix','Feu',1,1],[38,'Feunard','Feu',1,2],[43,'Mystherbe','Plante,Poison',1,1],[54,'Psykokwak','Eau',1,1],[63,'Abra','Psy',1,1],[64,'Kadabra','Psy',1,2],[65,'Alakazam','Psy',1,3],[74,'Racaillou','Roche,Sol',1,1],[92,'Fantominus','Spectre,Poison',1,1],[93,'Spectrum','Spectre,Poison',1,2],[94,'Ectoplasma','Spectre,Poison',1,3],[95,'Onix','Roche,Sol',1,1],[100,'Voltorbe','Électrik',1,1],[102,'Noeunoeuf','Plante,Psy',1,1],[116,'Hypotrempe','Eau',1,1],[125,'Élektek','Électrik',1,1],[126,'Magmar','Feu',1,1],[129,'Magicarpe','Eau',1,1],[133,'Évoli','Normal',1,1],[134,'Aquali','Eau',1,2],[135,'Voltali','Électrik',1,2],[136,'Pyroli','Feu',1,2],[138,'Amonita','Roche,Eau',1,1],[140,'Kabuto','Roche,Eau',1,1],[142,'Ptéra','Roche,Vol',1,1],[152,'Germignon','Plante',2,1],[155,'Héricendre','Feu',2,1],[158,'Kaiminus','Eau',2,1],[172,'Pichu','Électrik',2,1],[196,'Mentali','Psy',2,2],[200,'Feuforêve','Spectre',2,1],[252,'Arcko','Plante',3,1],[255,'Poussifeu','Feu',3,1],[258,'Gobou','Eau',3,1],[280,'Tarsal','Psy,Fée',3,1]];
+</script><script>
+/*ENGINE*/
+const TYPES_FR={normal:'Normal',fire:'Feu',water:'Eau',electric:'Électrik',grass:'Plante',ice:'Glace',fighting:'Combat',poison:'Poison',ground:'Sol',flying:'Vol',psychic:'Psy',bug:'Insecte',rock:'Roche',ghost:'Spectre',dragon:'Dragon',dark:'Ténèbres',steel:'Acier',fairy:'Fée'};
+const genOf=id=>[151,251,386,493,649].findIndex(m=>id<=m)+1;
+const strip=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const KINDS=[['type','gen'],['type','gen','stage','lettre'],['type','gen','stage','lettre','combo']];
+let DEX=[],byId={},CATS=[];
+// Catégories = règles vérifiables, construites dynamiquement à partir des données
+function setDex(list){
+ DEX=list;byId=Object.fromEntries(list.map(p=>[p.id,p]));CATS=[];
+ const add=(kind,id,label,test)=>{if(DEX.filter(test).length>=6)CATS.push({kind,id,label,test})};
+ Object.values(TYPES_FR).forEach(t=>add('type','t-'+t,'Type '+t,p=>p.types.includes(t)));
+ add('type','mono','Un seul type',p=>p.types.length===1);add('type','dual','Double type',p=>p.types.length===2);
+ [1,2,3,4,5].forEach(g=>add('gen','g'+g,'Génération '+g,p=>p.gen===g));
+ add('stage','s1','Pokémon de premier stade',p=>p.stage===1);add('stage','s3','Évolution finale (3 stades)',p=>p.stage===3);
+ 'ABCDEFGHIJKLMNOPRSTV'.split('').forEach(l=>add('lettre','l'+l,'Nom commençant par '+l,p=>strip(p.fr)[0].toUpperCase()===l));
+ const key=p=>[...p.types].sort().join('/');
+ new Set(DEX.filter(p=>p.types.length===2).map(key)).forEach(k=>add('combo','c'+k,'Type '+k,p=>p.types.length===2&&key(p)===k));
+}
+const shuffle=(a,r=Math.random)=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+// Génération vérifiée : chaque Pokémon ne correspond qu'à UNE catégorie de la grille (donc solution unique et non vide)
+// hist = grilles précédentes [{cats,ids}] : on évite leurs catégories et leurs Pokémon
+function makePuzzle({size=4,diff=1,hist=[],rnd=Math.random}={}){
+ const pool=CATS.filter(c=>KINDS[diff].includes(c.kind));
+ const rc=new Set(hist.slice(0,3).flatMap(h=>h.cats)),ri=new Set(hist.slice(0,2).flatMap(h=>h.ids));
+ for(let n=0;n<1500;n++){
+  const strict=n<700,cats=shuffle(pool,rnd).slice(0,size);
+  if(cats.length<size)continue;
+  if(strict&&(cats.some(c=>rc.has(c.id))||KINDS[2].some(k=>cats.filter(c=>c.kind===k).length>2)))continue;
+  const gs=cats.map(c=>({c,p:DEX.filter(p=>c.test(p)&&cats.every(o=>o===c||!o.test(p)))}));
+  if(gs.some(g=>g.p.length<size))continue;
+  return{size,cats:cats.map(c=>c.id),groups:gs.map(g=>({id:g.c.id,label:g.c.label,ids:shuffle(g.p,rnd).sort((a,b)=>ri.has(a.id)-ri.has(b.id)).slice(0,size).map(p=>p.id)}))};
+ }
+ throw new Error('Impossible de générer une grille avec ces données');
+}
+function newState(p,r=Math.random){return{size:p.size,groups:p.groups,order:shuffle(p.groups.flatMap(g=>g.ids),r),found:[],sel:[],errors:0,hints:0,hl:[]}}
+const same=(a,b)=>a.length===b.length&&a.every(x=>b.includes(x));
+function toggle(s,id){if(!s.order.includes(id))return s;const i=s.sel.indexOf(id);if(i>=0)s.sel.splice(i,1);else if(s.sel.length<s.size)s.sel.push(id);return s}
+function check(s){
+ if(s.sel.length!==s.size)return{status:'incomplete'};
+ const open=s.groups.filter(g=>!s.found.includes(g.id)),g=open.find(g=>same(g.ids,s.sel));
+ if(g){s.found.push(g.id);s.order=s.order.filter(id=>!g.ids.includes(id));s.sel=[];s.hl=[];return{status:'ok',group:g}}
+ s.errors++;
+ return{status:open.some(g=>g.ids.filter(id=>s.sel.includes(id)).length===s.size-1)?'close':'wrong'};
+}
+function hint(s){const o=s.groups.filter(g=>!s.found.includes(g.id));if(!o.length)return null;s.hints++;s.hl=o[Math.floor(Math.random()*o.length)].ids.slice(0,2);return s.hl}
+const isWon=s=>s.found.length===s.groups.length;
+/*END_ENGINE*/
+</script><script>
+const DEMO=RAW.map(([id,fr,t,gen,stage])=>({id,fr,types:t.split(','),gen,stage}));
+// Sprites : dossier local sprites/ID.png, puis CDN, puis GitHub, puis numéro
+const srcs=id=>[`sprites/${id}.png`,`https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/${id}.png`,`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`];
+async function loadDex(prog){
+ try{const c=JSON.parse(localStorage.getItem('pg_dex_v2')||'null');if(c&&c.length>=600)return{dex:c,src:'cache'}}catch(e){}
+ try{
+  prog(.3);
+  const q=`{pokemon_v2_pokemonspecies(where:{id:{_lte:649}},order_by:{id:asc}){id evolves_from_species_id pokemon_v2_pokemonspeciesnames(where:{language_id:{_eq:5}}){name} pokemon_v2_pokemons(where:{is_default:{_eq:true}}){pokemon_v2_pokemontypes{pokemon_v2_type{name}}}}}`;
+  const r=await fetch('https://beta.pokeapi.co/graphql/v1beta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q})});
+  const rows=(await r.json()).data.pokemon_v2_pokemonspecies,par={};
+  rows.forEach(s=>par[s.id]=s.evolves_from_species_id);
+  const depth=id=>par[id]?1+depth(par[id]):1;
+  const dex=rows.map(s=>({id:s.id,fr:s.pokemon_v2_pokemonspeciesnames[0].name,types:s.pokemon_v2_pokemons[0].pokemon_v2_pokemontypes.map(t=>TYPES_FR[t.pokemon_v2_type.name]),gen:genOf(s.id),stage:depth(s.id)}));
+  if(dex.length<600||dex.some(p=>!p.fr||!p.types.length||p.types.some(t=>!t)))throw 0;
+  try{localStorage.setItem('pg_dex_v2',JSON.stringify(dex))}catch(e){}
+  return{dex,src:'api'};
+ }catch(e){return{dex:DEMO,src:'demo'}}
+}
+const $=q=>document.querySelector(q),ls=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}},sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let S,busy=false,CFG=ls('pg_cfg',{size:4,diff:1}),HIST=ls('pg_hist',[]);
+const DEP={splash:0,menu:1,mode:2,stats:2,opts:2,game:3};let cur='splash';
+const show=n=>{const o=document.querySelector('.scr.on:not(.leave)'),w=$('#'+n);if(o===w)return;const fw=DEP[n]>=DEP[cur];cur=n;
+ if(o){o.style.setProperty('--d',fw?-1:1);o.classList.add('leave');setTimeout(()=>o.classList.remove('on','leave'),260)}
+ w.style.setProperty('--d',fw?1:-1);w.classList.add('on');scrollTo(0,0);
+ $('#gear').classList.toggle('gh',!['menu','mode','stats'].includes(n));
+ if(n==='stats')renderStats();if(n==='mode')markCfg();if(n==='opts')renderOpts();setScene(n==='game'?'game':'menu')};
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)show(g.dataset.go)});
+function markCfg(){document.querySelectorAll('#sizes button').forEach(b=>b.classList.toggle('on',+b.dataset.v===CFG.size));document.querySelectorAll('#diffs button').forEach(b=>b.classList.toggle('on',+b.dataset.v===CFG.diff))}
+$('#sizes').onclick=e=>{const b=e.target.closest('button');if(b){CFG.size=+b.dataset.v;markCfg()}};
+$('#diffs').onclick=e=>{const b=e.target.closest('button');if(b){CFG.diff=+b.dataset.v;markCfg()}};
+const NAMES=['Facile','Normal','Difficile'],mkey=()=>CFG.size+'-'+CFG.diff;
+function msg(t,c=''){const m=$('#msg');m.textContent=t;m.className=c}
+function start(){
+ sv('pg_cfg',CFG);const p=makePuzzle({size:CFG.size,diff:CFG.diff,hist:HIST});
+ HIST.unshift({cats:p.cats,ids:p.groups.flatMap(g=>g.ids)});HIST=HIST.slice(0,6);sv('pg_hist',HIST);
+ S=newState(p);busy=false;$('#grid').innerHTML='';$('#win').classList.remove('show');$('#gtitle').textContent=`${CFG.size}×${CFG.size} · ${NAMES[CFG.diff]}`;
+ const st=ls('pg_stats',{});(st[mkey()]=st[mkey()]||{p:0,w:0}).p++;sv('pg_stats',st);
+ msg(`Trouve les ${CFG.size} groupes cachés !`);show('game');render();
+}
+function render(){
+ $('#left').textContent=S.order.length;$('#err').textContent=S.errors;$('#grp').textContent=S.found.length+'/'+S.groups.length;
+ $('#found').innerHTML=S.found.map((id,k)=>{const g=S.groups.find(x=>x.id===id);return `<div class="fg c${k}"><b>${g.label}</b><span>${g.ids.map(i=>byId[i].fr).join(', ')}</span></div>`}).join('');
+ const grid=$('#grid');grid.style.setProperty('--n',S.size);[...grid.children].forEach(c=>{if(!S.order.includes(+c.dataset.id))c.remove()});
+ S.order.forEach((id,ix)=>{if(grid.querySelector(`[data-id="${id}"]`))return;const b=document.createElement('button');
+  b.className='card'+(S.sel.includes(id)?' sel':'')+(S.hl.includes(id)?' hl':'');b.dataset.id=id;b.style.setProperty('--i',ix);b.classList.add('enter');b.addEventListener('animationend',()=>b.classList.remove('enter'),{once:true});
+  b.innerHTML=`<div class="sp"><i>#${id}</i><img alt=""></div><span>${byId[id].fr}</span>`;
+  const im=b.querySelector('img'),l=(SPR[id]?[SPR[id]]:[]).concat(srcs(id));let k=0;im.onload=()=>im.previousElementSibling.hidden=true;im.onerror=()=>{if(++k<l.length)im.src=l[k];else im.remove()};im.src=l[0];
+  grid.append(b)});
+ paint();
+}
+function paint(){document.querySelectorAll('#grid .card').forEach(b=>{const id=+b.dataset.id;b.classList.toggle('sel',S.sel.includes(id));b.classList.toggle('hl',S.hl.includes(id))});$('#err').textContent=S.errors;$('#ok').disabled=S.sel.length!==S.size||isWon(S)}
+function win(){
+ const st=ls('pg_stats',{}),m=st[mkey()];m.w++;if(m.best==null||S.errors<m.best)m.best=S.errors;sv('pg_stats',st);
+ $('#wt').textContent=S.errors?'Bien joué !':'Parfait ! 🎉';$('#wd').textContent=`${S.errors} erreur${S.errors>1?'s':''} · ${S.hints} indice${S.hints>1?'s':''}`;const n=S.errors===0?3:S.errors<=2?2:1;$('#stars').textContent='★'.repeat(n)+'☆'.repeat(3-n);$('#win').classList.add('show');sfx('win');buzz([40,60,40,60,120]);confetti();
+}
+function renderStats(){const st=ls('pg_stats',{});$('#statlist').innerHTML=[3,4].flatMap(s=>[0,1,2].map(d=>{const m=st[s+'-'+d];return m?`<div class="row"><span>${s}×${s} ${NAMES[d]}</span><span>${m.w}/${m.p} gagnées · record ${m.best??'–'} err.</span></div>`:''})).join('')||'<p class="sub" style="text-align:center">Aucune partie jouée.</p>'}
+$('#grid').onclick=e=>{const c=e.target.closest('.card');if(!c||busy||isWon(S))return;const id=+c.dataset.id,was=S.sel.includes(id);toggle(S,id);buzz(8);sfx(was?'un':'tap');paint()};
+$('#clear').onclick=()=>{S.sel=[];paint()};
+$('#hint').onclick=()=>{if(hint(S)){msg('Indice : ces deux Pokémon vont dans le même groupe.');sfx('hint')}paint()};
+$('#new').onclick=start;$('#again').onclick=start;$('#start').onclick=start;
+$('#quit').onclick=()=>show('menu');$('#wmenu').onclick=()=>{$('#win').classList.remove('show');show('menu')};
+$('#reset').onclick=()=>{try{localStorage.removeItem('pg_dex_v2')}catch(e){}location.reload()};
+$('#ok').onclick=()=>{
+ if(busy)return;const ids=[...S.sel],r=check(S);
+ if(r.status==='ok'){busy=true;buzz([15,30,15]);sfx('ok');ids.forEach(id=>$(`[data-id="${id}"]`)?.classList.add('out'));msg('✔ '+r.group.label,'good');
+  setTimeout(()=>{busy=false;render();if(isWon(S))setTimeout(win,900)},320)}
+ else if(r.status!=='incomplete'){buzz(70);sfx('bad');paint();const g=$('#grid');g.classList.add('shake');setTimeout(()=>g.classList.remove('shake'),400);
+  msg(r.status==='close'?`Presque ! ${S.size-1} sur ${S.size} vont ensemble.`:"Ce n'est pas un groupe. Réessaie !",'bad')}
+};
+// Sprites hors ligne : copiés une fois dans IndexedDB (fonctionne dans Chrome, y compris depuis un fichier local, et dans un WebView Capacitor)
+let SPR={},DB=null;
+const idb=()=>new Promise((ok,ko)=>{const r=indexedDB.open('pg_sprites',1);r.onupgradeneeded=()=>r.result.createObjectStore('s');r.onsuccess=()=>ok(r.result);r.onerror=ko});
+const req=q=>new Promise(ok=>{q.onsuccess=()=>ok(q.result);q.onerror=()=>ok(null)});
+async function initSprites(){try{const db=await idb(),st=db.transaction('s').objectStore('s'),[ks,vs]=await Promise.all([req(st.getAllKeys()),req(st.getAll())]);ks.forEach((k,i)=>SPR[k]=URL.createObjectURL(vs[i]));return db}catch(e){return null}}
+const packInfo=t=>$('#packinfo').textContent=t||`${Object.keys(SPR).length}/${DEX.length} sprites enregistrés sur cet appareil`;
+$('#pack').onclick=async()=>{
+ if(!DB)return packInfo('Stockage indisponible ici : ouvre le fichier dans Chrome.');
+ const ids=DEX.map(p=>p.id).filter(id=>!SPR[id]),total=ids.length;let done=0,fail=0;
+ const work=async()=>{while(ids.length){const id=ids.pop();let ok=false;
+  for(const u of srcs(id).slice(1)){try{const r=await fetch(u);if(r.ok){const b=await r.blob();await new Promise(f=>{const t=DB.transaction('s','readwrite');t.objectStore('s').put(b,id);t.oncomplete=f;t.onerror=f});SPR[id]=URL.createObjectURL(b);ok=true;break}}catch(e){}}
+  if(!ok)fail++;packInfo(`Téléchargement… ${++done}/${total}`);$('#pk').style.width=done/total*100+'%'}};
+ await Promise.all(Array.from({length:8},work));
+ packInfo(fail?`${fail} sprites n'ont pas pu être téléchargés (connexion ?). Réessaie.`:'');
+};
+let VIB=true;try{VIB=localStorage.getItem('pg_vib')!=='0'}catch(e){}
+const buzz=p=>{if(VIB&&navigator.vibrate)navigator.vibrate(p)};
+function renderOpts(){$('#dexinfo2').textContent=$('#dexinfo').textContent;packInfo();$('#vib').classList.toggle('on',VIB)}
+$('#vib').onclick=()=>{VIB=!VIB;try{localStorage.setItem('pg_vib',VIB?'1':'0')}catch(e){}renderOpts();buzz(30)};
+$('#gear').onclick=()=>{buzz(8);show('opts')};
+function confetti(){const w=$('#win');w.querySelectorAll('.cf').forEach(e=>e.remove());for(let i=0;i<36;i++){const c=document.createElement('b');c.className='cf';c.style.cssText=`left:${Math.random()*100}%;background:hsl(${Math.random()*360} 90% 60%);animation-delay:${Math.random()*.6}s;--x:${(Math.random()-.5)*120}px`;w.append(c)}}
+/*AUDIO*/
+const lsn=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:+v}catch(e){return d}};
+const AU={ctx:null,mv:lsn('pg_mv',.6),sv:lsn('pg_sv',.7),cur:null,want:'menu',step:0,next:0};
+const N=m=>440*2**((m-69)/12);
+// Deux ambiances lo-fi générées en direct : menu (calme, sans percussions) et jeu (petit beat doux)
+const TRK={menu:{bpm:68,ch:[[57,60,64,67],[53,57,60,64],[48,52,55,59],[55,59,62,65]],sc:[69,72,74,76,79,81],drum:0},
+ game:{bpm:84,ch:[[48,52,55,59],[45,48,52,55],[53,57,60,64],[43,47,50,53]],sc:[72,74,76,79,81,84],drum:1}};
+function tone(f,t,d,ty,g,dest,a=.02){const c=AU.ctx,o=c.createOscillator(),e=c.createGain();o.type=ty;o.frequency.value=f;o.detune.value=(Math.random()-.5)*14;
+ e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(g,t+a);e.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(e);e.connect(dest);o.start(t);o.stop(t+d+.05)}
+function nz(t,d,hp,g){const c=AU.ctx;if(!AU.nb){const b=c.createBuffer(1,c.sampleRate,c.sampleRate),a=b.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1;AU.nb=b}
+ const s=c.createBufferSource(),f=c.createBiquadFilter(),e=c.createGain();s.buffer=AU.nb;f.type='highpass';f.frequency.value=hp;e.gain.setValueAtTime(g,t);e.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(e);e.connect(AU.m);s.start(t,Math.random()*.5,d+.05)}
+function kick(t){const c=AU.ctx,o=c.createOscillator(),e=c.createGain();o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(45,t+.15);e.gain.setValueAtTime(.35,t);e.gain.exponentialRampToValueAtTime(.0001,t+.25);o.connect(e);e.connect(AU.m);o.start(t);o.stop(t+.3)}
+function setVol(){const c=AU.ctx;if(!c)return;AU.s.gain.setTargetAtTime(AU.sv,c.currentTime,.03);if(AU.cur===AU.want)AU.m.gain.setTargetAtTime(AU.mv,c.currentTime,.05)}
+function audioInit(){if(AU.ctx)return;const c=AU.ctx=new(window.AudioContext||window.webkitAudioContext)(),lp=c.createBiquadFilter();
+ AU.m=c.createGain();AU.s=c.createGain();lp.type='lowpass';lp.frequency.value=2400;AU.m.connect(lp);lp.connect(c.destination);AU.s.connect(c.destination);
+ AU.cur=AU.want;AU.next=c.currentTime+.2;setVol();setInterval(sched,120)}
+function sched(){const c=AU.ctx,T=TRK[AU.cur];if(!c||!T||c.state!=='running')return;const sd=30/T.bpm;
+ while(AU.next<c.currentTime+.4){const t=AU.next,k=AU.step%8,ch=T.ch[Math.floor(AU.step/8)%4];
+  if(k===0)ch.forEach((n,i)=>tone(N(n),t+i*.03,sd*8,'triangle',.07,AU.m,.5));
+  if(k%2===0&&Math.random()<.8)tone(N(ch[(k/2)%4]+12),t,sd*1.8,'sine',.05,AU.m);
+  if(Math.random()<(T.drum?.3:.22)){const n=T.sc[Math.floor(Math.random()*6)];tone(N(n),t,sd*3,'sine',.07,AU.m);tone(N(n),t+sd*1.5,sd*3,'sine',.025,AU.m)}
+  if(T.drum){if(k===0||k===5)kick(t);if(k===4)nz(t,.12,1500,.05);if(k%2)nz(t,.04,7000,.02)}
+  AU.next+=sd;AU.step++}}
+function setTrack(n){AU.want=n;const c=AU.ctx;if(!c||AU.cur===n)return;AU.m.gain.cancelScheduledValues(c.currentTime);AU.m.gain.setTargetAtTime(0,c.currentTime,.1);clearTimeout(AU.tm);
+ AU.tm=setTimeout(()=>{AU.cur=n;AU.step=0;AU.next=c.currentTime+.1;AU.m.gain.setTargetAtTime(AU.mv,c.currentTime,.4)},500)}
+function sfx(n){const c=AU.ctx;if(!c||AU.sv<=0)return;const t=c.currentTime+.01,T=(f,o,l,ty='sine',g=.25)=>tone(f,t+o,l,ty,g,AU.s);
+ const F={tap:()=>T(740,0,.12),un:()=>T(520,0,.1),nav:()=>T(620,0,.09,'triangle',.2),ok:()=>[523,659,784].forEach((f,i)=>T(f,i*.08,.35,'triangle')),
+ bad:()=>{T(220,0,.25,'triangle',.3);T(165,.12,.35,'triangle',.3)},win:()=>[523,659,784,1047,784,1047].forEach((f,i)=>T(f,i*.12,.5,'triangle',.3)),hint:()=>{T(880,0,.3);T(1175,.1,.4)}};
+ if(F[n])F[n]()}
+/*END_AUDIO*/
+document.addEventListener('pointerdown',()=>{audioInit();if(AU.ctx.state==='suspended')AU.ctx.resume()});
+document.addEventListener('visibilitychange',()=>{if(AU.ctx)document.hidden?AU.ctx.suspend():AU.ctx.resume()});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.classList.contains('card')&&b.id!=='ok')sfx('nav')});
+['mv','sv'].forEach(k=>{const e=$('#'+k),f=()=>e.style.setProperty('--v',e.value+'%');e.value=AU[k]*100;f();
+ e.oninput=()=>{AU[k]=e.value/100;f();setVol();try{localStorage.setItem('pg_'+k,AU[k])}catch(x){}};e.onchange=()=>sfx('tap')});
+// Fond animé : Poké Balls flottantes (menu) / lucioles (jeu), en fondu entre les deux
+const cv=$('#bg'),cx=cv.getContext('2d');let W=0,H=0,R=1,PT=[],BG='menu';
+function fit(){R=Math.min(devicePixelRatio||1,2);W=cv.width=innerWidth*R;H=cv.height=innerHeight*R}
+function seed(){PT=Array.from({length:BG==='menu'?22:34},()=>({x:Math.random()*W,y:Math.random()*H,r:(BG==='menu'?18+Math.random()*50:2+Math.random()*5)*R,v:(.15+Math.random()*.5)*R,ph:Math.random()*6.28,rot:Math.random()*6.28,a:0}))}
+function ball(x,y,r,rot,a){cx.save();cx.translate(x,y);cx.rotate(rot);cx.globalAlpha=a;cx.fillStyle='#ff4d5e';cx.beginPath();cx.arc(0,0,r,Math.PI,0);cx.fill();cx.fillStyle='#fff';cx.beginPath();cx.arc(0,0,r,0,Math.PI);cx.fill();
+ cx.fillStyle='#10142b';cx.fillRect(-r,-r*.09,2*r,r*.18);cx.beginPath();cx.arc(0,0,r*.3,0,7);cx.fill();cx.fillStyle='#fff';cx.beginPath();cx.arc(0,0,r*.17,0,7);cx.fill();cx.restore()}
+function loop(){cx.clearRect(0,0,W,H);cx.globalCompositeOperation=BG==='menu'?'source-over':'lighter';
+ for(const p of PT){p.y-=p.v;p.ph+=.012;p.rot+=.004;p.a=Math.min(p.a+.012,1);if(p.y<-p.r*4){p.y=H+p.r*4;p.x=Math.random()*W}const x=p.x+Math.sin(p.ph)*20*R;
+  if(BG==='menu')ball(x,p.y,p.r,p.rot,(.07+.1*p.r/(68*R))*p.a);
+  else{const g=cx.createRadialGradient(x,p.y,0,x,p.y,p.r*4),a=(.35+.35*Math.sin(p.ph*3))*p.a;g.addColorStop(0,`rgba(140,230,255,${a})`);g.addColorStop(1,'rgba(140,230,255,0)');cx.fillStyle=g;cx.beginPath();cx.arc(x,p.y,p.r*4,0,7);cx.fill()}}
+ requestAnimationFrame(loop)}
+function setScene(n){setTrack(n);if(BG===n)return;cv.style.opacity=0;setTimeout(()=>{BG=n;seed();cv.style.opacity=1},300)}
+addEventListener('resize',()=>{fit();seed()});fit();seed();loop();
+(async()=>{
+ const {dex,src}=await loadDex(p=>$('#pb').style.width=p*100+'%');setDex(dex);DB=await initSprites();packInfo();$('#pb').style.width='100%';
+ $('#load').textContent=src==='demo'?`Mode hors ligne : ${dex.length} Pokémon seulement`:`${dex.length} Pokémon prêts`;
+ $('#dexinfo').textContent=`${dex.length} Pokémon · ${CATS.length} catégories`;
+ $('#go').hidden=false;$('#go').onclick=()=>show('menu');
+})();
+</script></body></html>
