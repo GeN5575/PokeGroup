@@ -178,6 +178,15 @@ h2.ttl{text-align:left;text-transform:uppercase;letter-spacing:2px;font-size:22p
 .resume[hidden]{display:none}.resume small{font-family:Rajdhani,Inter,sans-serif;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--cy)}.resume b{font-family:Rajdhani,Inter,sans-serif;font-size:19px}
 .row.cat{opacity:.55;margin-bottom:6px}.row.cat.got{opacity:1;border-color:rgba(92,214,255,.5)}.row.cat.got span:first-child{color:var(--cy);font-weight:700}
 #mxsolve{margin-top:10px}#mxsolve[hidden]{display:none}
+/* sélection des générations */
+.gbtn{width:100%;min-height:56px;display:flex;justify-content:space-between;align-items:center;text-align:left;padding:10px 16px;border:1px solid var(--line);background:rgba(16,26,69,.72);color:var(--txt);font:600 16px Rajdhani,Inter,sans-serif;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
+.gbtn b{color:var(--cy);font-size:22px}.panel[hidden]{display:none}
+.pair{display:flex;gap:8px}.pair button{flex:1;min-height:44px;border:1px solid var(--line);border-radius:var(--r1);background:rgba(16,26,69,.72);color:var(--txt);font:600 14px Rajdhani,Inter,sans-serif;text-transform:uppercase;letter-spacing:1px}
+.glist{max-height:calc(100vh - 340px);min-height:160px;overflow-y:auto;overscroll-behavior:contain;margin:12px 0;padding-right:4px}
+.gi{position:relative;display:flex;align-items:center;gap:12px;padding:12px 16px;margin-bottom:8px;background:rgba(16,26,69,.72);border:1px solid var(--line);border-radius:var(--r1);min-height:58px}
+.gi input{position:absolute;opacity:0;pointer-events:none}.gi i{width:26px;height:26px;border-radius:6px;border:2px solid var(--cy);flex:none;display:grid;place-items:center;transition:background var(--d1)}
+.gi input:checked+i{background:var(--cy)}.gi input:checked+i::after{content:"✓";color:#04102b;font-weight:800;font-size:17px}
+.gi span{flex:1;font-family:Rajdhani,Inter,sans-serif;font-size:19px;font-weight:700;text-transform:uppercase}.gi small{color:var(--mut)}
 </style></head><body><canvas id="bg"></canvas><svg width="0" height="0" style="position:absolute"><symbol id="ball" viewBox="0 0 100 100"><path d="M5 50a45 45 0 0 1 90 0z" fill="#ff4d5e"/><path d="M5 50a45 45 0 0 0 90 0z" fill="#fff"/><rect x="5" y="46" width="90" height="8" fill="#10142b"/><circle cx="50" cy="50" r="14" fill="#fff" stroke="#10142b" stroke-width="7"/></symbol></svg>
 <section id="splash" class="scr on"><svg class="ball"><use href="#ball"/></svg><div class="logo">PokéGroups</div><p class="sub" id="load">Chargement du Pokédex…</p><div class="pbar"><i id="pb"></i></div><button class="big" id="go" hidden>Jouer</button></section>
 <section id="menu" class="scr"><div class="hbar"><svg class="mini"><use href="#ball"/></svg><span>PokéGroups</span></div>
@@ -190,21 +199,25 @@ h2.ttl{text-align:left;text-transform:uppercase;letter-spacing:2px;font-size:22p
 <div class="lb">Mode</div><div class="opts" id="gmodes"><button data-v="classic">Classique<small>Une grille, erreurs illimitées</small></button><button data-v="surv">Survie<small>3 vies, grilles à la chaîne, difficulté croissante</small></button></div>
 <div class="lb">Grille</div><div class="opts" id="sizes"><button data-v="3-3">3×3<small>3 groupes de 3</small></button><button data-v="4-4">4×4<small>4 groupes de 4</small></button><button data-v="4-5">4×5<small>5 groupes de 4</small></button></div>
 <div class="lb">Difficulté</div><div class="opts" id="diffs"><button data-v="0">Facile<small>types, générations</small></button><button data-v="1">Normal<small>+ lettres, stades</small></button><button data-v="2">Difficile<small>+ doubles types</small></button></div>
-<button class="big" id="start">C'est parti !</button><button class="back" data-go="modes">Retour</button></section>
+<div class="lb">Générations</div><button class="gbtn" id="ggens"></button><p class="sub" id="gerr"></p><button class="big" id="start">C'est parti !</button><button class="back" data-go="modes">Retour</button></section>
 <section id="game" class="scr"><div class="top"><button id="quit">←</button><h3 id="gtitle"></h3><button id="new">↻</button></div>
 <div class="stats"><div><b id="left"></b>restants</div><div><b id="grp"></b>groupes</div><div><b id="err">0</b><span id="errl">erreurs</span></div></div>
 <div class="prog"><i id="pbar"></i></div><div id="found"></div><div id="grid"></div><p id="msg"></p>
 <div class="bar"><button class="act" id="clear">Effacer</button><button class="act" id="hint">Indice</button><button class="act pri" id="ok" disabled>Vérifier le groupe</button></div></section>
+<section id="gens" class="scr"><h2 class="ttl">Générations</h2><p class="sub" id="gensum"></p>
+<div class="pair"><button id="gall">Tout cocher</button><button id="gnone">Tout décocher</button></div>
+<div id="genlist" class="glist"></div><button class="big" id="gok">Valider</button><button class="back" id="gback">Retour</button></section>
 <section id="cats" class="scr"><h2 class="ttl">Catégories</h2><p class="sub" id="catsum"></p><div id="catlist"></div><button class="back" data-go="menu">Retour</button></section>
 <section id="stats" class="scr"><h2>Statistiques</h2><div id="statlist"></div><button class="back" data-go="menu">Retour</button></section>
 <section id="modes" class="scr"><h2 class="ttl">Choisir un mode</h2>
 <button class="ban b1" data-go="mode"><span class="chip">Classique</span><b>PokéGroups</b><small>Trouve les groupes de Pokémon qui partagent un point commun.</small></button>
 <button class="ban b2" id="tomx"><span class="chip">Déduction</span><b>PokéMatrix</b><small>Un puzzle à contraintes croisées, généré et vérifié à chaque partie.</small></button><button class="back" data-go="menu">Retour</button></section>
 <section id="mxmode" class="scr"><h2 class="ttl">PokéMatrix</h2><p class="sub">Un niveau unique est généré et vérifié à chaque partie.</p>
-<div class="lb">Difficulté</div><div class="opts" id="mxdiffs"><button data-v="0">Facile<small>2 emplacements · indices directs</small></button><button data-v="1">Normal<small>3 emplacements · contraintes croisées</small></button><button data-v="2">Difficile<small>4 emplacements · nombreuses relations</small></button></div>
+<div class="lb">Difficulté</div><div class="opts" id="mxdiffs"><button data-v="0">Facile<small>3 cases à remplir · indices directs</small></button><button data-v="1">Normal<small>3 cases à remplir · indices variés</small></button><button data-v="2">Difficile<small>4 cases + contexte (contraintes croisées)</small></button></div>
+<div class="lb">Générations</div><button class="gbtn" id="mxgens"></button>
 <p class="sub" id="mxerr"></p><button class="big" id="mxstart">Lancer la partie</button><button class="back" data-go="modes">Retour</button></section>
 <section id="mxgame" class="scr"><div class="top"><button id="mxquit">←</button><h3 id="mxtitle"></h3><button id="mxreset">↻</button></div>
-<div id="slots"></div><div class="panel"><h4>Contraintes</h4><div id="rels"></div></div>
+<div id="slots"></div><div class="panel" id="relpanel"><h4>Contexte · contraintes croisées</h4><div id="rels"></div></div>
 <input id="q" type="search" placeholder="Rechercher un Pokémon…" autocomplete="off"><div id="sug"></div><p id="mxmsg"></p>
 <div id="mxres" class="panel res"></div><button class="big" id="mxok" disabled>Valider la proposition</button><button class="big alt" id="mxsolve">Voir la solution</button></section>
 <section id="opts" class="scr"><h2>Options</h2>
@@ -223,7 +236,7 @@ const RAW=[[1,'Bulbizarre','Plante,Poison',1,1],[2,'Herbizarre','Plante,Poison',
 </script><script>
 /*ENGINE*/
 const TYPES_FR={normal:'Normal',fire:'Feu',water:'Eau',electric:'Électrik',grass:'Plante',ice:'Glace',fighting:'Combat',poison:'Poison',ground:'Sol',flying:'Vol',psychic:'Psy',bug:'Insecte',rock:'Roche',ghost:'Spectre',dragon:'Dragon',dark:'Ténèbres',steel:'Acier',fairy:'Fée'};
-const genOf=id=>[151,251,386,493,649].findIndex(m=>id<=m)+1;
+const genOf=id=>{const i=[151,251,386,493,649,721,809,905,1025].findIndex(m=>id<=m);return i<0?9:i+1};
 const strip=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const E0=['type','gen','color','legend'],E1=[...E0,'stage','lettre','evo','weak','list'];
 const KINDS=[E0,E1,[...E1,'combo','ability','stat','size','end']];
@@ -234,7 +247,7 @@ function setDex(list){
  const add=(kind,id,label,test)=>{if(DEX.filter(test).length>=6)CATS.push({kind,id,label,test})};
  Object.values(TYPES_FR).forEach(t=>add('type','t-'+t,'Type '+t,p=>p.types.includes(t)));
  add('type','mono','Un seul type',p=>p.types.length===1);add('type','dual','Double type',p=>p.types.length===2);
- [1,2,3,4,5].forEach(g=>add('gen','g'+g,'Génération '+g,p=>p.gen===g));
+ [1,2,3,4,5,6,7,8,9].forEach(g=>add('gen','g'+g,'Génération '+g,p=>p.gen===g));
  add('stage','s1','Pokémon de premier stade',p=>p.stage===1);add('stage','s3','Évolution finale (3 stades)',p=>p.stage===3);
  'ABCDEFGHIJKLMNOPRSTV'.split('').forEach(l=>add('lettre','l'+l,'Nom commençant par '+l,p=>strip(p.fr)[0].toUpperCase()===l));
  const key=p=>[...p.types].sort().join('/');
@@ -251,11 +264,12 @@ function setDex(list){
  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l=>add('end','z'+l,'Nom finissant par '+l,p=>strip(p.fr).slice(-1).toUpperCase()===l));
  if(typeof wk==='function'){Object.values(TYPES_FR).forEach(t=>{add('weak','wk-'+t,'Faible contre le type '+t,p=>wk(p.types,0).includes(t));add('weak','rs-'+t,'Résiste au type '+t,p=>wk(p.types,1).includes(t))});add('weak','x4','Quadruple faiblesse',p=>TN.some(a=>mult(a,p.types)>=4))}
  add('list',"Famille d'Évoli",'l-evoli',p=>false);CATS.pop();
- [['l-evoli',"Famille d'Évoli",[133,134,135,136,196,197,470,471]],['l-start','Pokémon de départ',[1,4,7,152,155,158,252,255,258,387,390,393,495,498,501]],['l-pseudo','Pseudo-légendaires',[149,248,373,376,445,635]]].forEach(([id,l,a])=>add('list',id,l,p=>a.includes(p.id)));
+ [['l-evoli',"Famille d'Évoli",[133,134,135,136,196,197,470,471,700]],['l-start','Pokémon de départ',[1,4,7,152,155,158,252,255,258,387,390,393,495,498,501,650,653,656,722,725,728,810,813,816,906,909,912]],['l-pseudo','Pseudo-légendaires',[149,248,373,376,445,635,706,784,887,998]]].forEach(([id,l,a])=>add('list',id,l,p=>a.includes(p.id)));
 }
 const shuffle=(a,r=Math.random)=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 // Génération vérifiée : chaque Pokémon ne correspond qu'à UNE catégorie de la grille (donc solution unique et non vide)
 // hist = grilles précédentes [{cats,ids}] : on évite leurs catégories et leurs Pokémon
+function verifyGroups(p,cats){const seen=new Set();return p.groups.length===cats.length&&p.groups.every(g=>g.ids.length===p.size&&g.ids.every(id=>{if(seen.has(id))return false;seen.add(id);const d=byId[id];return !!d&&cats.filter(c=>c.test(d)).map(c=>c.id).join()===g.id}))}
 function makePuzzle({size=4,count=size,diff=1,hist=[],rnd=Math.random}={}){
  const pool=CATS.filter(c=>KINDS[diff].includes(c.kind));
  const rc=new Set(hist.slice(0,3).flatMap(h=>h.cats)),ri=new Set(hist.slice(0,2).flatMap(h=>h.ids));
@@ -265,7 +279,7 @@ function makePuzzle({size=4,count=size,diff=1,hist=[],rnd=Math.random}={}){
   if(strict&&(cats.some(c=>rc.has(c.id))||KINDS[2].some(k=>cats.filter(c=>c.kind===k).length>2)))continue;
   const gs=cats.map(c=>({c,p:DEX.filter(p=>c.test(p)&&cats.every(o=>o===c||!o.test(p)))}));
   if(gs.some(g=>g.p.length<size))continue;
-  return{size,cats:cats.map(c=>c.id),groups:gs.map(g=>({id:g.c.id,label:g.c.label,ids:shuffle(g.p,rnd).sort((a,b)=>ri.has(a.id)-ri.has(b.id)).slice(0,size).map(p=>p.id)}))};
+  const out={size,cats:cats.map(c=>c.id),groups:gs.map(g=>({id:g.c.id,label:g.c.label,ids:shuffle(g.p,rnd).sort((a,b)=>ri.has(a.id)-ri.has(b.id)).slice(0,size).map(p=>p.id)}))};if(verifyGroups(out,cats))return out;
  }
  throw new Error('Impossible de générer une grille avec ces données');
 }
@@ -283,34 +297,35 @@ function hint(s){const o=s.groups.filter(g=>!s.found.includes(g.id));if(!o.lengt
 const isWon=s=>s.found.length===s.groups.length;
 /*END_ENGINE*/
 </script><script>
+let ALLDEX=[],ALLMAP={},CURK='all';
 const DEMO=RAW.map(([id,fr,t,gen,stage])=>({id,fr,types:t.split(','),gen,stage}));
 // Sprites : dossier local sprites/ID.png, puis CDN, puis GitHub, puis numéro
 const srcs=id=>[`sprites/${id}.png`,`https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/${id}.png`,`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`];
 async function loadDex(prog){
- try{const c=JSON.parse(localStorage.getItem('pg_dex_v3')||'null');if(c&&c.length>=600)return{dex:c,src:'cache'}}catch(e){}
+ try{const c=JSON.parse(localStorage.getItem('pg_dex_v4')||'null');if(c&&c.length>=600)return{dex:c,src:'cache'}}catch(e){}
  try{
   prog(.3);
-  const q=`{pokemon_v2_pokemonspecies(where:{id:{_lte:649}},order_by:{id:asc}){id evolves_from_species_id pokemon_v2_pokemonspeciesnames(where:{language_id:{_eq:5}}){name} pokemon_v2_pokemons(where:{is_default:{_eq:true}}){pokemon_v2_pokemontypes{pokemon_v2_type{name}}}}}`;
+  const q=`{pokemon_v2_pokemonspecies(order_by:{id:asc}){id generation_id evolves_from_species_id pokemon_v2_pokemonspeciesnames(where:{language_id:{_eq:5}}){name} pokemon_v2_pokemons(where:{is_default:{_eq:true}}){pokemon_v2_pokemontypes{pokemon_v2_type{name}}}}}`;
   const r=await fetch('https://beta.pokeapi.co/graphql/v1beta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q})});
   const rows=(await r.json()).data.pokemon_v2_pokemonspecies,par={};
   rows.forEach(s=>par[s.id]=s.evolves_from_species_id);
   const depth=id=>par[id]?1+depth(par[id]):1;
-  const dex=rows.map(s=>({id:s.id,fr:s.pokemon_v2_pokemonspeciesnames[0].name,types:s.pokemon_v2_pokemons[0].pokemon_v2_pokemontypes.map(t=>TYPES_FR[t.pokemon_v2_type.name]),gen:genOf(s.id),stage:depth(s.id),from:s.evolves_from_species_id}));
+  const dex=rows.map(s=>({id:s.id,fr:s.pokemon_v2_pokemonspeciesnames[0].name,types:s.pokemon_v2_pokemons[0].pokemon_v2_pokemontypes.map(t=>TYPES_FR[t.pokemon_v2_type.name]),gen:s.generation_id||genOf(s.id),stage:depth(s.id),from:s.evolves_from_species_id}));
   if(dex.length<600||dex.some(p=>!p.fr||!p.types.length||p.types.some(t=>!t)))throw 0;
-  try{localStorage.setItem('pg_dex_v3',JSON.stringify(dex))}catch(e){}
+  try{localStorage.setItem('pg_dex_v4',JSON.stringify(dex))}catch(e){}
   return{dex,src:'api'};
  }catch(e){return{dex:DEMO,src:'demo'}}
 }
 const $=q=>document.querySelector(q),ls=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}},sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-let S,SV=null,busy=false,CFG=Object.assign({size:4,count:4,diff:1,mode:'classic'},ls('pg_cfg',{})),HIST=ls('pg_hist',[]);
-const DEP={splash:0,menu:1,modes:2,stats:2,opts:2,cats:2,mode:3,mxmode:3,game:4,mxgame:4};let cur='splash';
-const show=n=>{const o=document.querySelector('.scr.on:not(.leave)'),w=$('#'+n);if(o===w)return;const fw=DEP[n]>=DEP[cur];cur=n;
+let S,SV=null,busy=false,CFG=Object.assign({size:4,count:4,diff:1,mode:'classic',gens:null},ls('pg_cfg',{})),HIST=ls('pg_hist',[]);
+const DEP={splash:0,menu:1,modes:2,stats:2,opts:2,cats:2,gens:4,mode:3,mxmode:3,game:4,mxgame:4};let cur='splash';
+const show=n=>{const o=document.querySelector('.scr.on:not(.leave)'),w=$('#'+n);if(o===w)return;if(n!=='game'&&n!=='mxgame')useGens(null);const fw=DEP[n]>=DEP[cur];cur=n;
  if(o){o.style.setProperty('--d',fw?-1:1);o.classList.add('leave');setTimeout(()=>o.classList.remove('on','leave'),260)}
  w.style.setProperty('--d',fw?1:-1);w.classList.add('on');scrollTo(0,0);
- $('#gear').classList.toggle('gh',!['menu','modes','mode','stats','mxmode','cats'].includes(n));if(n==='cats')renderCats();
+ $('#gear').classList.toggle('gh',!['menu','modes','mode','stats','mxmode','cats'].includes(n));if(n==='cats')renderCats();if(n==='gens')renderGens();
  if(n==='menu')homeStats();if(n==='stats')renderStats();if(n==='mode')markCfg();if(n==='mxmode')markX();if(n==='opts')renderOpts();setScene(n==='game'||n==='mxgame'?'game':'menu')};
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)show(g.dataset.go)});
-function markCfg(){document.querySelectorAll('#sizes button').forEach(b=>b.classList.toggle('on',b.dataset.v===CFG.size+'-'+CFG.count));document.querySelectorAll('#diffs button').forEach(b=>b.classList.toggle('on',+b.dataset.v===CFG.diff));document.querySelectorAll('#gmodes button').forEach(b=>b.classList.toggle('on',b.dataset.v===CFG.mode))}
+function markCfg(){document.querySelectorAll('#sizes button').forEach(b=>b.classList.toggle('on',b.dataset.v===CFG.size+'-'+CFG.count));document.querySelectorAll('#diffs button').forEach(b=>b.classList.toggle('on',+b.dataset.v===CFG.diff));document.querySelectorAll('#gmodes button').forEach(b=>b.classList.toggle('on',b.dataset.v===CFG.mode));$('#ggens').innerHTML=gRow(CFG.gens)}
 $('#gmodes').onclick=e=>{const b=e.target.closest('button');if(b){CFG.mode=b.dataset.v;markCfg()}};
 $('#sizes').onclick=e=>{const b=e.target.closest('button');if(b){[CFG.size,CFG.count]=b.dataset.v.split('-').map(Number);markCfg()}};
 $('#diffs').onclick=e=>{const b=e.target.closest('button');if(b){CFG.diff=+b.dataset.v;markCfg()}};
@@ -318,7 +333,7 @@ const NAMES=['Facile','Normal','Difficile'],mkey=()=>(CFG.count===CFG.size?CFG.s
 function msg(t,c=''){const m=$('#msg');m.textContent=t;m.className=c}
 function startRun(){SV=CFG.mode==='surv'?{score:0,lives:3,d0:CFG.diff}:null;if(SV){const st=ls('pg_stats',{});(st.surv=st.surv||{p:0,best:0}).p++;sv('pg_stats',st)}start()}
 function start(){
- sv('pg_cfg',CFG);const d=SV?Math.min(2,SV.d0+Math.floor(SV.score/3)):CFG.diff,p=makePuzzle({size:CFG.size,count:CFG.count,diff:d,hist:HIST});
+ sv('pg_cfg',CFG);useGens(CFG.gens);const d=SV?Math.min(2,SV.d0+Math.floor(SV.score/3)):CFG.diff;let p;try{p=makePuzzle({size:CFG.size,count:CFG.count,diff:d,hist:HIST})}catch(e){$('#gerr').textContent='Pas assez de Pokémon pour cette combinaison : coche plus de générations ou choisis une grille plus petite.';SV=null;show('mode');return}$('#gerr').textContent='';
  HIST.unshift({cats:p.cats,ids:p.groups.flatMap(g=>g.ids)});HIST=HIST.slice(0,6);sv('pg_hist',HIST);
  S=newState(p);busy=false;$('#grid').innerHTML='';$('#win').classList.remove('show');$('#new').style.visibility=SV?'hidden':'visible';
  $('#gtitle').textContent=SV?`Survie · Grille ${SV.score+1}`:`${CFG.size}×${CFG.count} · ${NAMES[CFG.diff]}`;
@@ -354,7 +369,7 @@ $('#clear').onclick=()=>{S.sel=[];paint()};
 $('#hint').onclick=()=>{if(hint(S)){msg('Indice : ces deux Pokémon vont dans le même groupe.');sfx('hint')}paint()};
 $('#new').onclick=start;$('#again').onclick=()=>{(SV&&SV.lives<=0)?startRun():start()};$('#start').onclick=startRun;
 $('#quit').onclick=()=>show('menu');$('#wmenu').onclick=()=>{$('#win').classList.remove('show');show('menu')};
-$('#reset').onclick=()=>{try{localStorage.removeItem('pg_dex_v3');localStorage.removeItem('pg_extra_v1')}catch(e){}location.reload()};
+$('#reset').onclick=()=>{try{localStorage.removeItem('pg_dex_v4');localStorage.removeItem('pg_extra_v2')}catch(e){}location.reload()};
 $('#ok').onclick=()=>{
  if(busy)return;const ids=[...S.sel],r=check(S);
  if(r.status==='ok'){busy=true;buzz([15,30,15]);sfx('ok');seeCat(r.group);ids.forEach(id=>$(`[data-id="${id}"]`)?.classList.add('out'));msg('✔ '+r.group.label,'good');
@@ -486,9 +501,9 @@ function explain(pz,picks,dex){const m=pickMap(pz,picks,dex),f=(c,v)=>c.attr==='
 const IC=(slot,attr,op,v)=>({slot,attr,op,v}),RC=(a,b,attr,op)=>({a,b,attr,op});
 // Génération : une solution secrète est tirée, on en déduit des contraintes vraies, puis on les affine jusqu'à une solution unique.
 // Chaque niveau est vérifié par analyse() avant d'être proposé ; sans solution unique on garde le niveau le plus restreint trouvé.
-const VALS={types:TN,weak:TN,resist:TN,gen:[1,2,3,4,5],stage:[1,2,3],stages:[1,2,3]},OPS=a=>VALS[a]===TN?['has','lacks']:['eq','ne'];
+const VALS={types:TN,weak:TN,resist:TN,gen:[1,2,3,4,5,6,7,8,9],stage:[1,2,3],stages:[1,2,3]},OPS=a=>VALS[a]===TN?['has','lacks']:['eq','ne'];
 const shM=(a,r)=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-function genPuzzle(dex,{n=3,rnd=Math.random,hist=[]}={}){
+function genPuzzle(dex,{n=3,rel=true,diff=null,rnd=Math.random,hist=[]}={}){if(diff!=null){n=diff===2?4:3;rel=diff===2}
  const SL=['A','B','C','D'].slice(0,n),ok=dex.filter(p=>p.types&&p.gen),pick=a=>a[Math.floor(rnd()*a.length)],strong=l=>l.filter(c=>c.op==='has'||c.op==='eq');
  const indiv=(s,p)=>{const o=[];for(const a in VALS)for(const v of VALS[a])for(const op of OPS(a)){const c={slot:s,attr:a,op,v};if(testI(c,p))o.push(c)}return o};
  const rels=(a,p,b,q)=>{const o=[];for(const[at,ops]of[['types',['share','disjoint']],['weak',['share','disjoint']],['resist',['share','disjoint']],['gen',['same','diff']],['stage',['same','diff']],['fam',['same','diff']]])for(const op of ops){const c={a,b,attr:at,op};if(testR(c,p,q))o.push(c)}return o};
@@ -498,11 +513,11 @@ function genPuzzle(dex,{n=3,rnd=Math.random,hist=[]}={}){
   const sec=shM(ok,rnd).slice(0,n);if(sec.length<n||sec.some(p=>hist.includes(p.id)))continue;
   const I=SL.map((s,i)=>indiv(s,sec[i])),R=[];for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)R.push(...rels(SL[i],sec[i],SL[j],sec[j]));
   const cons=[];I.forEach(l=>{const a=pick(strong(l));cons.push(a);const r=l.filter(c=>c.attr!==a.attr),s2=strong(r);cons.push(pick(s2.length?s2:r))});
-  shM(R,rnd).slice(0,n===2?1:n).forEach(c=>cons.push(c));
+  if(rel)shM(R,rnd).slice(0,n===2?1:n).forEach(c=>cons.push(c));if(diff===1)I.forEach(l=>{const rest=l.filter(c=>!cons.includes(c)),w=rest.filter(c=>c.attr==='weak'||c.attr==='resist'||c.op==='lacks'||c.op==='ne');cons.push(pick(w.length?w:rest))});
   const mk=cs=>({id:'gen',title:`PokéMatrix · ${n} Pokémon`,slots:SL,dup:false,cons:cs,secret:sec.map(p=>p.id)});
   let a=analyse(mk(cons),dex,2);if(a.status==='impossible')continue;
   const pool=shM(I.flat().concat(R),rnd).sort((x,y)=>str(y)-str(x));let add=0;
-  for(let k=0;k<pool.length&&k<30&&add<6&&a.status!=='unique';k++){if(cons.includes(pool[k]))continue;const b=analyse(mk([...cons,pool[k]]),dex,2);if(b.status!=='impossible'&&score(b)<score(a)){cons.push(pool[k]);a=b;add++}}
+  for(let k=0;rel&&k<pool.length&&k<30&&add<6&&a.status!=='unique';k++){if(cons.includes(pool[k]))continue;const b=analyse(mk([...cons,pool[k]]),dex,2);if(b.status!=='impossible'&&score(b)<score(a)){cons.push(pool[k]);a=b;add++}}
   const f=analyse(mk(cons),dex,30),c=f.solutions.length,sm=Object.fromEntries(SL.map((s,i)=>[s,sec[i]]));if(!cons.every(k=>holds(k,sm)))continue;
   if(c>0&&(!best||c<best.count||(c===best.count&&score(a)<best.sc)))best={...mk(cons),count:c,sc:score(a)}}
  return best}
@@ -512,28 +527,28 @@ let MX=null;
 function sp(id){const d=document.createElement('div');d.className='sp';d.innerHTML=`<i>#${id}</i><img alt="">`;const im=d.querySelector('img'),l=(SPR[id]?[SPR[id]]:[]).concat(srcs(id));let k=0;
  im.onload=()=>d.firstChild.hidden=true;im.onerror=()=>{if(++k<l.length)im.src=l[k];else im.remove()};im.src=l[0];return d}
 const mxMsg=(t,c='')=>{const m=$('#mxmsg');m.textContent=t;m.className=c};
-let MXH=[];const CFGX=Object.assign({diff:1},ls('pg_mxcfg',{}));
-function markX(){document.querySelectorAll('#mxdiffs button').forEach(b=>b.classList.toggle('on',+b.dataset.v===CFGX.diff))}
-function mxNew(){const pz=genPuzzle(DEX,{n:[2,3,4][CFGX.diff],hist:MXH});
+let MXH=[];const CFGX=Object.assign({diff:1,gens:null},ls('pg_mxcfg',{}));
+function markX(){document.querySelectorAll('#mxdiffs button').forEach(b=>b.classList.toggle('on',+b.dataset.v===CFGX.diff));$('#mxgens').innerHTML=gRow(CFGX.gens)}
+function mxNew(){useGens(CFGX.gens);const pz=genPuzzle(DEX,{diff:CFGX.diff,hist:MXH});
  if(!pz){$('#mxerr').textContent='Impossible de générer un niveau avec les données actuelles : recharge le Pokédex dans les options.';show('mxmode');return}
  $('#mxerr').textContent='';MXH=pz.secret.concat(MXH).slice(0,8);mxStart(pz)}
 $('#mxdiffs').onclick=e=>{const b=e.target.closest('button');if(b){CFGX.diff=+b.dataset.v;sv('pg_mxcfg',CFGX);markX()}};
 $('#mxstart').onclick=mxNew;
-$('#diagbtn').onclick=()=>{const out=$('#diag'),b=$('#diagbtn'),tot=30;b.disabled=true;let i=0,ok=0,uni=0,bad=null;
- const step=()=>{if(i>=tot){out.textContent=`${ok}/${tot} niveaux valides sur ${DEX.length} Pokémon · ${uni} à solution unique`+(bad?` · PROBLÈME : ${bad}`:'');b.disabled=false;return}
-  const n=[2,3,4][i%3],pz=genPuzzle(DEX,{n});i++;
+$('#diagbtn').onclick=()=>{const out=$('#diag'),b=$('#diagbtn'),tot=30,gc=()=>{let g=0,t=0;[[3,3],[4,4],[4,5]].forEach(([s,c])=>[0,1,2].forEach(d=>{t++;try{const q=makePuzzle({size:s,count:c,diff:d});if(verifyGroups(q,q.cats.map(id=>CATS.find(x=>x.id===id))))g++}catch(e){}}));return` · PokéGroups : ${g}/${t} grilles valides`};b.disabled=true;let i=0,ok=0,uni=0,bad=null;
+ const step=()=>{if(i>=tot){out.textContent=`${ok}/${tot} niveaux valides sur ${DEX.length} Pokémon · ${uni} à solution unique`+(bad?` · PROBLÈME : ${bad}`:'')+gc();b.disabled=false;return}
+  const pz=genPuzzle(DEX,{diff:i%3});i++;
   if(!pz)bad=bad||'génération impossible';
   else{const m=Object.fromEntries(pz.slots.map((s,k)=>[s,byId[pz.secret[k]]])),a=analyse(pz,DEX,30);
    if(a.status!=='impossible'&&pz.cons.every(c=>holds(c,m))&&checkProposal(pz,Object.fromEntries(pz.slots.map((s,k)=>[s,pz.secret[k]])),DEX).ok){ok++;if(a.solutions.length===1)uni++}else bad=bad||pz.cons.map(c=>desc(c)).join(' | ')}
   out.textContent=`Test en cours… ${i}/${tot}`;setTimeout(step,0)};step()};
-function mxStart(pz){MX={pz,picks:{},act:pz.slots[0],done:false,bad:new Set()};$('#mxtitle').textContent=pz.title;$('#q').value='';$('#q').disabled=false;$('#sug').innerHTML='';
+function mxStart(pz){MX={pz,picks:{},act:pz.slots[0],done:false,bad:new Set(),gens:CFGX.gens};$('#mxtitle').textContent=pz.title;$('#q').value='';$('#q').disabled=false;$('#sug').innerHTML='';
  $('#mxres').classList.remove('show');mxMsg(`Niveau vérifié · ${pz.count===1?'solution unique':'plusieurs solutions possibles'}. Choisis un emplacement, puis cherche un Pokémon.`);mxRender();show('mxgame')}
 function mxRender(){const{pz,picks,act,done,bad}=MX,box=$('#slots');box.innerHTML='';
  pz.slots.forEach(s=>{const d=document.createElement('div');d.className='slot'+(s===act&&!done?' act':'');d.dataset.s=s;
   d.innerHTML=`<div class="l">${s}</div><div class="cl">${pz.cons.filter(c=>c.slot===s).map(c=>`<span class="${bad.has(c)?'bad':''}">• ${desc(c)}</span>`).join('')}</div><div class="pk"><div class="ph"></div><b>${picks[s]?byId[picks[s]].fr:'?'}</b><div class="st">${done?'Confirmé':picks[s]?'Candidat':'Non résolu'}</div></div>`;
   const ph=d.querySelector('.ph');if(picks[s])ph.append(sp(picks[s]));else ph.textContent='❔';box.append(d)});
  $('#rels').innerHTML=pz.cons.filter(c=>c.a).map(c=>`<div class="${bad.has(c)?'bad':''}">• ${desc(c)}</div>`).join('');
- $('#mxok').disabled=!done&&!pz.slots.every(s=>picks[s]);$('#mxok').textContent=done?'Nouveau puzzle':'Valider la proposition';$('#mxsolve').hidden=done;mxSave()}
+ $('#mxok').disabled=!done&&!pz.slots.every(s=>picks[s]);$('#mxok').textContent=done?'Nouveau puzzle':'Valider la proposition';$('#relpanel').hidden=!pz.cons.some(c=>c.a);$('#mxsolve').hidden=done;mxSave()}
 function mxSug(){const nq=strip($('#q').value).toLowerCase(),box=$('#sug'),n=p=>strip(p.fr).toLowerCase();box.innerHTML='';if(!nq)return;
  DEX.filter(p=>n(p).includes(nq)).sort((a,b)=>n(b).startsWith(nq)-n(a).startsWith(nq)).slice(0,8).forEach(p=>{const b=document.createElement('button');b.className='sg';b.dataset.id=p.id;b.append(sp(p.id));
   b.append(Object.assign(document.createElement('span'),{textContent:`${p.fr} · #${p.id}`}));box.append(b)})}
@@ -563,12 +578,12 @@ function renderCats(){const by={};CATS.forEach(c=>(by[c.kind]=by[c.kind]||[]).pu
  $('#catlist').innerHTML=Object.keys(KIND_FR).filter(k=>by[k]).map(k=>{const l=by[k];return`<div class="lb">${KIND_FR[k]} · ${l.filter(c=>SEEN[c.id]).length}/${l.length}</div>`+l.map(c=>SEEN[c.id]?`<div class="row cat got"><span>${c.label}</span><span>×${SEEN[c.id].n}</span></div>`:'<div class="row cat"><span>???</span><span>à découvrir</span></div>').join('')}).join('')}
 const clearSave=()=>{try{localStorage.removeItem('pg_save')}catch(e){}};
 function loadSave(){try{const s=JSON.parse(localStorage.getItem('pg_save'));if(!s)return null;
- const ok=s.mx?Object.values(s.mx.picks||{}).every(id=>byId[id]):s.S.order.every(id=>byId[id])&&s.S.groups.every(g=>g.ids.every(id=>byId[id]));return ok?s:null}catch(e){return null}}
+ const ok=s.mx?Object.values(s.mx.picks||{}).every(id=>ALLMAP[id]):s.S.order.every(id=>ALLMAP[id])&&s.S.groups.every(g=>g.ids.every(id=>ALLMAP[id]));return ok?s:null}catch(e){return null}}
 function save(){try{if(!S||cur!=='game'||isWon(S)||(SV&&SV.lives<=0))return;localStorage.setItem('pg_save',JSON.stringify({cfg:CFG,sv:SV,S}))}catch(e){}}
 function mxSave(){try{if(!MX)return;if(MX.done){clearSave();return}if(cur==='mxgame')localStorage.setItem('pg_save',JSON.stringify({mx:{...MX,bad:[]}}))}catch(e){}}
 $('#resume').onclick=()=>{const s=loadSave();if(!s)return;
- if(s.mx){MX={...s.mx,bad:new Set()};$('#mxtitle').textContent=MX.pz.title;$('#q').value='';$('#q').disabled=false;$('#sug').innerHTML='';$('#mxres').classList.remove('show');mxMsg('Partie reprise.');mxRender();show('mxgame');return}
- Object.assign(CFG,s.cfg);SV=s.sv;S=s.S;S.sel=S.sel||[];S.hl=S.hl||[];busy=false;$('#grid').innerHTML='';$('#win').classList.remove('show');$('#new').style.visibility=SV?'hidden':'visible';
+ if(s.mx){MX={...s.mx,bad:new Set()};useGens(MX.gens);$('#mxtitle').textContent=MX.pz.title;$('#q').value='';$('#q').disabled=false;$('#sug').innerHTML='';$('#mxres').classList.remove('show');mxMsg('Partie reprise.');mxRender();show('mxgame');return}
+ Object.assign(CFG,s.cfg);useGens(CFG.gens);SV=s.sv;S=s.S;S.sel=S.sel||[];S.hl=S.hl||[];busy=false;$('#grid').innerHTML='';$('#win').classList.remove('show');$('#new').style.visibility=SV?'hidden':'visible';
  $('#gtitle').textContent=SV?`Survie · Grille ${SV.score+1}`:`${CFG.size}×${CFG.count} · ${NAMES[CFG.diff]}`;msg('Partie reprise.');show('game');render()};
 function errShow(){$('#errl').textContent=SV?'vies':'erreurs';$('#err').textContent=SV?'♥'.repeat(Math.max(0,SV.lives)):S.errors}
 // PokéMatrix : bouton « Voir la solution » (deux appuis pour éviter une erreur de toucher) ; la solution est calculée par le moteur
@@ -580,9 +595,9 @@ $('#mxsolve').onclick=()=>{if(MX.done)return;const b=$('#mxsolve');
  $('#mxres').innerHTML='<h4>Solution et explications</h4>'+explain(MX.pz,MX.picks,DEX).map(t=>`<div class="ok">✔ ${t}</div>`).join('');$('#mxres').classList.add('show');sfx('ok');mxRender()};
 // Données enrichies (couleur, statut, méthodes d'évolution, talents, stats, taille) : appel séparé et facultatif, mis en cache ; s'il échoue, le jeu fonctionne sans
 async function enrichDex(dex){
- let ex=null;try{ex=JSON.parse(localStorage.getItem('pg_extra_v1')||'null')}catch(e){}
+ let ex=null;try{ex=JSON.parse(localStorage.getItem('pg_extra_v2')||'null')}catch(e){}
  if(!ex){try{
-  const q=`{pokemon_v2_pokemonspecies(where:{id:{_lte:649}},order_by:{id:asc}){id is_legendary is_mythical is_baby pokemon_v2_pokemoncolor{name} pokemon_v2_pokemonevolutions{min_level min_happiness min_affection time_of_day pokemon_v2_evolutiontrigger{name}} pokemon_v2_pokemons(where:{is_default:{_eq:true}}){height weight pokemon_v2_pokemonstats{base_stat pokemon_v2_stat{name}} pokemon_v2_pokemonabilities{pokemon_v2_ability{pokemon_v2_abilitynames(where:{language_id:{_eq:5}}){name}}}}}}`;
+  const q=`{pokemon_v2_pokemonspecies(order_by:{id:asc}){id is_legendary is_mythical is_baby pokemon_v2_pokemoncolor{name} pokemon_v2_pokemonevolutions{min_level min_happiness min_affection time_of_day pokemon_v2_evolutiontrigger{name}} pokemon_v2_pokemons(where:{is_default:{_eq:true}}){height weight pokemon_v2_pokemonstats{base_stat pokemon_v2_stat{name}} pokemon_v2_pokemonabilities{pokemon_v2_ability{pokemon_v2_abilitynames(where:{language_id:{_eq:5}}){name}}}}}}`;
   const r=await fetch('https://beta.pokeapi.co/graphql/v1beta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q})});
   const rows=(await r.json()).data.pokemon_v2_pokemonspecies,ORD=['hp','attack','defense','special-attack','special-defense','speed'];ex={};
   rows.forEach(s=>{const p=s.pokemon_v2_pokemons[0]||{},m=new Set();
@@ -591,10 +606,26 @@ async function enrichDex(dex){
    ex[s.id]={color:s.pokemon_v2_pokemoncolor&&s.pokemon_v2_pokemoncolor.name,cls:s.is_legendary?'L':s.is_mythical?'M':s.is_baby?'B':'',evo:[...m],h:p.height,w:p.weight,
     st:ORD.map(k=>((p.pokemon_v2_pokemonstats||[]).find(x=>x.pokemon_v2_stat.name===k)||{}).base_stat),
     ab:[...new Set((p.pokemon_v2_pokemonabilities||[]).map(a=>((a.pokemon_v2_ability.pokemon_v2_abilitynames||[])[0]||{}).name).filter(Boolean))]}});
-  try{localStorage.setItem('pg_extra_v1',JSON.stringify(ex))}catch(e){}}catch(e){ex=null}}
+  try{localStorage.setItem('pg_extra_v2',JSON.stringify(ex))}catch(e){}}catch(e){ex=null}}
  if(ex)dex.forEach(p=>{const e=ex[p.id];if(e)Object.assign(p,e,{st:e.st.every(x=>x!=null)?e.st:undefined})})}
+// ===== Générations cochées pour la partie (PokéGroups et PokéMatrix) =====
+const ALLG=[1,2,3,4,5,6,7,8,9];let GCTX='groups',GSEL=new Set();
+const gAvail=()=>ALLG.filter(x=>ALLDEX.some(p=>p.gen===x)),gl=g=>(g&&g.length?g:ALLG).filter(x=>ALLDEX.some(p=>p.gen===x));
+function useGens(g){const k=g&&g.length?[...g].sort((a,b)=>a-b).join():'all';if(k===CURK)return;CURK=k;setDex(k==='all'?ALLDEX:ALLDEX.filter(p=>g.includes(p.gen)))}
+function genText(g){const l=gl(g),n=ALLDEX.filter(p=>l.includes(p.gen)).length;return(l.length===gAvail().length?'Toutes les générations':l.length===1?'Génération '+l[0]:'Générations '+l.join(', '))+' · '+n+' Pokémon'}
+const gRow=g=>`<span>${genText(g)}</span><b>›</b>`;
+function gSum(){const n=ALLDEX.filter(p=>GSEL.has(p.gen)).length;$('#gensum').textContent=GSEL.size?`${GSEL.size} génération${GSEL.size>1?'s':''} · ${n} Pokémon`:'Aucune génération cochée'}
+function renderGens(){GSEL=new Set(gl(GCTX==='groups'?CFG.gens:CFGX.gens));
+ $('#genlist').innerHTML=gAvail().map(g=>`<label class="gi"><input type="checkbox" value="${g}"${GSEL.has(g)?' checked':''}><i></i><span>Génération ${g}</span><small>${ALLDEX.filter(p=>p.gen===g).length} Pokémon</small></label>`).join('');gSum()}
+$('#genlist').onchange=e=>{const v=+e.target.value;e.target.checked?GSEL.add(v):GSEL.delete(v);gSum();sfx('tap')};
+$('#gall').onclick=()=>{gAvail().forEach(g=>GSEL.add(g));document.querySelectorAll('#genlist input').forEach(i=>i.checked=true);gSum()};
+$('#gnone').onclick=()=>{GSEL.clear();document.querySelectorAll('#genlist input').forEach(i=>i.checked=false);gSum()};
+$('#gok').onclick=()=>{if(!GSEL.size){$('#gensum').textContent='Coche au moins une génération.';return}
+ const v=GSEL.size===gAvail().length?null:[...GSEL].sort((a,b)=>a-b);if(GCTX==='groups'){CFG.gens=v;sv('pg_cfg',CFG)}else{CFGX.gens=v;sv('pg_mxcfg',CFGX)}show(GCTX==='groups'?'mode':'mxmode')};
+$('#gback').onclick=()=>show(GCTX==='groups'?'mode':'mxmode');
+$('#ggens').onclick=()=>{GCTX='groups';show('gens')};$('#mxgens').onclick=()=>{GCTX='matrix';show('gens')};
 (async()=>{
- const {dex,src}=await loadDex(p=>$('#pb').style.width=p*100+'%');await enrichDex(dex);prepDex(dex);setDex(dex);DB=await initSprites();packInfo();heroInit();homeStats();$('#pb').style.width='100%';
+ const {dex,src}=await loadDex(p=>$('#pb').style.width=p*100+'%');await enrichDex(dex);prepDex(dex);setDex(dex);ALLDEX=dex;ALLMAP=byId;CURK='all';DB=await initSprites();packInfo();heroInit();homeStats();$('#pb').style.width='100%';
  $('#load').textContent=src==='demo'?`Mode hors ligne : ${dex.length} Pokémon seulement`:`${dex.length} Pokémon prêts`;
  $('#dexinfo').textContent=`${dex.length} Pokémon · ${CATS.length} catégories`;
  $('#go').hidden=false;$('#go').onclick=()=>show('menu');
